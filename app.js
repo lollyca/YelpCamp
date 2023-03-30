@@ -37,5 +37,3 @@ app.get('/makecampground', async (req, res) => {
 app.listen(3000, () => {
     console.log('Listening on Port 3000');
 });
-
-//Parei bem na hora de criar a connection aqui!
