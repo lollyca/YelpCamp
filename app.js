@@ -33,6 +33,12 @@ app.get('/campgrounds', async (req, res) => {
     res.render('campgrounds/index', {campgrounds});
 });
 
+app.get('/campgrounds/:id', async (req, res) => {
+    //we findById to get exacly the one from the loop in the index.ejs file
+    const campground = await Campground.findById(req.params.id);
+    res.render('campgrounds/show', {campground})
+})
+
 app.get('/makecampground', async (req, res) => {
     const camp = new Campground({ title: 'My Backyard', description: 'cheap camping'});
     await camp.save();
@@ -42,3 +48,9 @@ app.get('/makecampground', async (req, res) => {
 app.listen(3000, () => {
     console.log('Listening on Port 3000');
 });
+
+
+
+//Learning:
+//We use async functions when we need to look up our database first to continue doing things
+
