@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
     res.render('home');
 });
 
-app.get('/campgrounds',cathcAsync (async (req, res) => {
+app.get('/campgrounds', cathcAsync(async (req, res) => {
     const campgrounds = await Campground.find({});
     res.render('campgrounds/index', { campgrounds });
 }));
@@ -55,25 +55,25 @@ app.post('/campgrounds', cathcAsync(async (req, res, next) => {
     res.redirect(`/campgrounds/${campground._id}`);
 }));
 
-app.get('/campgrounds/:id',cathcAsync (async (req, res) => {
+app.get('/campgrounds/:id', cathcAsync(async (req, res) => {
     //we findById to get exacly the one from the loop in the index.ejs file
     const campground = await Campground.findById(req.params.id);
     res.render('campgrounds/show', { campground });
 }));
 
-app.get('/campgrounds/:id/edit',cathcAsync (async (req, res) => {
+app.get('/campgrounds/:id/edit', cathcAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     res.render('campgrounds/edit', { campground });
 }));
 
 //#update
-app.put('/campgrounds/:id',cathcAsync (async (req, res) => {
+app.put('/campgrounds/:id', cathcAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
     res.redirect(`/campgrounds/${campground._id}`);
 }));
 
-app.delete('/campgrounds/:id',cathcAsync (async (req, res) => {
+app.delete('/campgrounds/:id', cathcAsync(async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
     res.redirect('/campgrounds');
@@ -84,9 +84,9 @@ app.all('*', (req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-    const {statusCode = 500, message = 'something went wrong baby'} = err;
-    res.status(statusCode).send(message);
-    res.send('Oh boy, something went wrong!');
+    const { statusCode = 500, message = 'something went wrong baby' } = err;
+    if(!err.message) err.message = 'Oh No, Something went wrong BOY'
+    res.status(statusCode).render('error', { err });
 });
 
 app.listen(3000, () => {
