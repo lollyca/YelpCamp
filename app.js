@@ -5,6 +5,7 @@ const Campground = require('./models/campground');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 const ejsMate = require('ejs-mate');
+const cathcAsync = require('./utils/cathAsync')
 
 // https://mongoosejs.com/docs/connections.html
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
@@ -34,46 +35,51 @@ app.get('/', (req, res) => {
     res.render('home');
 });
 
-app.get('/campgrounds', async (req, res) => {
+app.get('/campgrounds',cathcAsync (async (req, res) => {
     const campgrounds = await Campground.find({});
-    res.render('campgrounds/index', {campgrounds});
-});
+    res.render('campgrounds/index', { campgrounds });
+}));
 
 app.get('/campgrounds/new', (req, res) => {
     res.render('campgrounds/new');
 });
 
-app.post('/campgrounds', async (req, res) => {
+app.post('/campgrounds', cathcAsync(async (req, res, next) => {
     //without parse.body we can't see a thing =P
     //res.send(req.body);
     //Ok, after looking what req.body was, lets create a new Camground and save
     const campground = new Campground(req.body.campground);
     await campground.save();
     res.redirect(`/campgrounds/${campground._id}`);
-});
+}));
 
-app.get('/campgrounds/:id', async (req, res) => {
+app.get('/campgrounds/:id',cathcAsync (async (req, res) => {
     //we findById to get exacly the one from the loop in the index.ejs file
     const campground = await Campground.findById(req.params.id);
     res.render('campgrounds/show', { campground });
-});
+}));
 
-app.get('/campgrounds/:id/edit', async (req, res) => {
+app.get('/campgrounds/:id/edit',cathcAsync (async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     res.render('campgrounds/edit', { campground });
-});
+}));
 
 //#update
-app.put('/campgrounds/:id', async (req, res) => {
+app.put('/campgrounds/:id',cathcAsync (async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
     res.redirect(`/campgrounds/${campground._id}`);
-});
+}));
 
-app.delete('/campgrounds/:id', async (req, res) => {
+app.delete('/campgrounds/:id',cathcAsync (async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
     res.redirect('/campgrounds');
+}));
+
+
+app.use((err, req, res, next) => {
+    res.send('Oh boy, something went wrong!');
 });
 
 app.listen(3000, () => {
