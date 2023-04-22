@@ -5,7 +5,8 @@ const Campground = require('./models/campground');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 const ejsMate = require('ejs-mate');
-const cathcAsync = require('./utils/cathAsync')
+const cathcAsync = require('./utils/cathAsync');
+const ExpressError = require('./utils/ExpressError')
 
 // https://mongoosejs.com/docs/connections.html
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
@@ -48,6 +49,7 @@ app.post('/campgrounds', cathcAsync(async (req, res, next) => {
     //without parse.body we can't see a thing =P
     //res.send(req.body);
     //Ok, after looking what req.body was, lets create a new Camground and save
+    if (!req.body.campground) throw new ExpressError('Invalid Campground Data', 400);
     const campground = new Campground(req.body.campground);
     await campground.save();
     res.redirect(`/campgrounds/${campground._id}`);
@@ -77,8 +79,13 @@ app.delete('/campgrounds/:id',cathcAsync (async (req, res) => {
     res.redirect('/campgrounds');
 }));
 
+app.all('*', (req, res, next) => {
+    next(new ExpressError('Page not found', 404));
+})
 
 app.use((err, req, res, next) => {
+    const {statusCode = 500, message = 'something went wrong baby'} = err;
+    res.status(statusCode).send(message);
     res.send('Oh boy, something went wrong!');
 });
 
