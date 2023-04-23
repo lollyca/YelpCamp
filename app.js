@@ -6,7 +6,9 @@ const methodOverride = require('method-override');
 const morgan = require('morgan');
 const ejsMate = require('ejs-mate');
 const cathcAsync = require('./utils/cathAsync');
-const ExpressError = require('./utils/ExpressError')
+const ExpressError = require('./utils/ExpressError');
+const Joi = require('joi');
+const {campgroundSchema} = require('./schemas.js');
 
 // https://mongoosejs.com/docs/connections.html
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
@@ -30,13 +32,24 @@ app.set('views', path.join(__dirname, 'views'));
 app.engine('ejs', ejsMate);
 
 app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride('_method'))
+app.use(methodOverride('_method'));
+
+const validatedCampground = (req, res, next) => {
+    const {error} = campgroundSchema.validate(req.body);
+    if(error) {
+        const msg = error.details.map(el => el.message). join(',');
+        throw new ExpressError(msg, 400);
+    } else {
+        next();
+    }
+};
 
 app.get('/', (req, res) => {
     res.render('home');
 });
 
-app.get('/campgrounds', cathcAsync(async (req, res) => {
+app.get('/campgrounds', cathcAsync(async (req, res) => { 
+    
     const campgrounds = await Campground.find({});
     res.render('campgrounds/index', { campgrounds });
 }));
@@ -45,11 +58,11 @@ app.get('/campgrounds/new', (req, res) => {
     res.render('campgrounds/new');
 });
 
-app.post('/campgrounds', cathcAsync(async (req, res, next) => {
+app.post('/campgrounds',validatedCampground, cathcAsync(async (req, res, next) => {
     //without parse.body we can't see a thing =P
     //res.send(req.body);
     //Ok, after looking what req.body was, lets create a new Camground and save
-    if (!req.body.campground) throw new ExpressError('Invalid Campground Data', 400);
+    //if (!req.body.campground) throw new ExpressError('Invalid Campground Data', 400);
     const campground = new Campground(req.body.campground);
     await campground.save();
     res.redirect(`/campgrounds/${campground._id}`);
@@ -67,7 +80,7 @@ app.get('/campgrounds/:id/edit', cathcAsync(async (req, res) => {
 }));
 
 //#update
-app.put('/campgrounds/:id', cathcAsync(async (req, res) => {
+app.put('/campgrounds/:id',validatedCampground, cathcAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
     res.redirect(`/campgrounds/${campground._id}`);
