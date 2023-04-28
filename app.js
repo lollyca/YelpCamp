@@ -9,6 +9,7 @@ const cathcAsync = require('./utils/cathAsync');
 const ExpressError = require('./utils/ExpressError');
 const Joi = require('joi');
 const {campgroundSchema} = require('./schemas.js');
+const Review = require('./models/review');
 
 // https://mongoosejs.com/docs/connections.html
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
@@ -92,9 +93,18 @@ app.delete('/campgrounds/:id', cathcAsync(async (req, res) => {
     res.redirect('/campgrounds');
 }));
 
+app.post('/campgrounds/:id/reviews', cathcAsync(async (req, res, next) => {
+    const campground = await Campground.findById(req.params.id);
+    const review = new Review(req.body.review);
+    campground.reviews.push(review);
+    await review.save();
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id}`);
+}));
+
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page not found', 404));
-})
+});
 
 app.use((err, req, res, next) => {
     const { statusCode = 500, message = 'something went wrong baby' } = err;
