@@ -8,7 +8,7 @@ const ejsMate = require('ejs-mate');
 const cathcAsync = require('./utils/cathAsync');
 const ExpressError = require('./utils/ExpressError');
 const Joi = require('joi');
-const {campgroundSchema} = require('./schemas.js');
+const {campgroundSchema, reviewSchema} = require('./schemas.js');
 const Review = require('./models/review');
 
 // https://mongoosejs.com/docs/connections.html
@@ -37,6 +37,16 @@ app.use(methodOverride('_method'));
 
 const validatedCampground = (req, res, next) => {
     const {error} = campgroundSchema.validate(req.body);
+    if(error) {
+        const msg = error.details.map(el => el.message). join(',');
+        throw new ExpressError(msg, 400);
+    } else {
+        next();
+    }
+};
+
+const validateReview = (req,res,next) => {
+    const {error} = reviewSchema.validate(req.body);
     if(error) {
         const msg = error.details.map(el => el.message). join(',');
         throw new ExpressError(msg, 400);
@@ -93,7 +103,7 @@ app.delete('/campgrounds/:id', cathcAsync(async (req, res) => {
     res.redirect('/campgrounds');
 }));
 
-app.post('/campgrounds/:id/reviews', cathcAsync(async (req, res, next) => {
+app.post('/campgrounds/:id/reviews',validateReview, cathcAsync(async (req, res, next) => {
     const campground = await Campground.findById(req.params.id);
     const review = new Review(req.body.review);
     campground.reviews.push(review);
