@@ -81,7 +81,7 @@ app.post('/campgrounds',validatedCampground, cathcAsync(async (req, res, next) =
 
 app.get('/campgrounds/:id', cathcAsync(async (req, res) => {
     //we findById to get exacly the one from the loop in the index.ejs file
-    const campground = await Campground.findById(req.params.id);
+    const campground = await Campground.findById(req.params.id).populate('reviews');
     res.render('campgrounds/show', { campground });
 }));
 
