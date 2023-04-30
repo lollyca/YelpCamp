@@ -112,6 +112,14 @@ app.post('/campgrounds/:id/reviews',validateReview, cathcAsync(async (req, res, 
     res.redirect(`/campgrounds/${campground._id}`);
 }));
 
+app.delete('/campgrounds/:id/reviews/:reviewId', cathcAsync (async (req, res) => {
+    const {id, reviewId} = req.params;
+    await Campground.findByIdAndUpdate(id, {$pull: {reviews: reviewId}}); //I want to pull from the reviews array reviewID (how to read this line) -- if you want to google it: remove from array mongo
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/campgrounds/${id}`);
+
+}));
+
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page not found', 404));
 });
