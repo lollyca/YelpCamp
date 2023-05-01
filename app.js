@@ -1,17 +1,15 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-const Campground = require('./models/campground');
 const methodOverride = require('method-override');
-const morgan = require('morgan');
 const ejsMate = require('ejs-mate');
-const cathcAsync = require('./utils/cathAsync');
 const ExpressError = require('./utils/ExpressError');
+
 const Joi = require('joi');
-const {campgroundSchema, reviewSchema} = require('./schemas.js');
-const Review = require('./models/review');
 
 const campgrounds = require('./routes/campgrounds');
+const reviews = require('./routes/reviews');
+
 
 // https://mongoosejs.com/docs/connections.html
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
@@ -37,42 +35,12 @@ app.engine('ejs', ejsMate);
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
-
-
-const validateReview = (req,res,next) => {
-    const {error} = reviewSchema.validate(req.body);
-    if(error) {
-        const msg = error.details.map(el => el.message). join(',');
-        throw new ExpressError(msg, 400);
-    } else {
-        next();
-    }
-};
-
 app.use('/campgrounds', campgrounds);
+app.use('/campgrounds/:id/reviews', reviews);
 
 app.get('/', (req, res) => {
     res.render('home');
 });
-
-
-
-app.post('/campgrounds/:id/reviews',validateReview, cathcAsync(async (req, res, next) => {
-    const campground = await Campground.findById(req.params.id);
-    const review = new Review(req.body.review);
-    campground.reviews.push(review);
-    await review.save();
-    await campground.save();
-    res.redirect(`/campgrounds/${campground._id}`);
-}));
-
-app.delete('/campgrounds/:id/reviews/:reviewId', cathcAsync (async (req, res) => {
-    const {id, reviewId} = req.params;
-    await Campground.findByIdAndUpdate(id, {$pull: {reviews: reviewId}}); //I want to pull from the reviews array reviewID (how to read this line) -- if you want to google it: remove from array mongo
-    await Review.findByIdAndDelete(reviewId);
-    res.redirect(`/campgrounds/${id}`);
-
-}));
 
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page not found', 404));
