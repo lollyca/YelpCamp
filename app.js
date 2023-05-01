@@ -11,6 +11,8 @@ const Joi = require('joi');
 const {campgroundSchema, reviewSchema} = require('./schemas.js');
 const Review = require('./models/review');
 
+const campgrounds = require('./routes/campgrounds');
+
 // https://mongoosejs.com/docs/connections.html
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
     useNewUrlParser: true,
@@ -35,15 +37,7 @@ app.engine('ejs', ejsMate);
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
-const validatedCampground = (req, res, next) => {
-    const {error} = campgroundSchema.validate(req.body);
-    if(error) {
-        const msg = error.details.map(el => el.message). join(',');
-        throw new ExpressError(msg, 400);
-    } else {
-        next();
-    }
-};
+
 
 const validateReview = (req,res,next) => {
     const {error} = reviewSchema.validate(req.body);
@@ -55,53 +49,13 @@ const validateReview = (req,res,next) => {
     }
 };
 
+app.use('/campgrounds', campgrounds);
+
 app.get('/', (req, res) => {
     res.render('home');
 });
 
-app.get('/campgrounds', cathcAsync(async (req, res) => { 
-    
-    const campgrounds = await Campground.find({});
-    res.render('campgrounds/index', { campgrounds });
-}));
 
-app.get('/campgrounds/new', (req, res) => {
-    res.render('campgrounds/new');
-});
-
-app.post('/campgrounds',validatedCampground, cathcAsync(async (req, res, next) => {
-    //without parse.body we can't see a thing =P
-    //res.send(req.body);
-    //Ok, after looking what req.body was, lets create a new Camground and save
-    //if (!req.body.campground) throw new ExpressError('Invalid Campground Data', 400);
-    const campground = new Campground(req.body.campground);
-    await campground.save();
-    res.redirect(`/campgrounds/${campground._id}`);
-}));
-
-app.get('/campgrounds/:id', cathcAsync(async (req, res) => {
-    //we findById to get exacly the one from the loop in the index.ejs file
-    const campground = await Campground.findById(req.params.id).populate('reviews');
-    res.render('campgrounds/show', { campground });
-}));
-
-app.get('/campgrounds/:id/edit', cathcAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
-    res.render('campgrounds/edit', { campground });
-}));
-
-//#update
-app.put('/campgrounds/:id',validatedCampground, cathcAsync(async (req, res) => {
-    const { id } = req.params;
-    const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
-    res.redirect(`/campgrounds/${campground._id}`);
-}));
-
-app.delete('/campgrounds/:id', cathcAsync(async (req, res) => {
-    const { id } = req.params;
-    await Campground.findByIdAndDelete(id);
-    res.redirect('/campgrounds');
-}));
 
 app.post('/campgrounds/:id/reviews',validateReview, cathcAsync(async (req, res, next) => {
     const campground = await Campground.findById(req.params.id);
@@ -133,10 +87,3 @@ app.use((err, req, res, next) => {
 app.listen(3000, () => {
     console.log('Listening on Port 3000');
 });
-
-
-
-//Learning:
-//We use async functions when we need to look up our database first to continue doing things
-//#update  ---  After seting up the route for edit we need to ACTUALLY update the thing, thats why we have #update right bellow
-
