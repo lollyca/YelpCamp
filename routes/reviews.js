@@ -34,6 +34,7 @@ router.delete('/:reviewId', cathcAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } }); //I want to pull from the reviews array reviewID (how to read this line) -- if you want to google it: remove from array mongo
     await Review.findByIdAndDelete(reviewId);
+    req.flash('success', 'Successfully deleted a Review');
     res.redirect(`/campgrounds/${id}`);
 
 }));
