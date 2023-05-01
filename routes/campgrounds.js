@@ -46,6 +46,10 @@ router.post('/', validatedCampground, cathcAsync(async (req, res, next) => {
 router.get('/:id', cathcAsync(async (req, res) => {
     //we findById to get exacly the one from the loop in the index.ejs file
     const campground = await Campground.findById(req.params.id).populate('reviews');
+    if(!campground) {
+        req.flash('error', 'Campground Not Found');
+        res.redirect('/campgrounds');
+    }
     res.render('campgrounds/show', { campground });
 }));
 
