@@ -8,8 +8,7 @@ const Campground = require('../models/campground');
 const express = require('express');
 const router = express.Router();
 
-
-
+// --------------------------------------------------------------------
 const validatedCampground = (req, res, next) => {
     const { error } = campgroundSchema.validate(req.body);
     if (error) {
@@ -19,8 +18,7 @@ const validatedCampground = (req, res, next) => {
         next();
     }
 };
-
-
+// --------------------------------------------------------------------
 
 router.get('/', cathcAsync(async (req, res) => {
 
