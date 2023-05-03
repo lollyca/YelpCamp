@@ -35,4 +35,25 @@ router.post('/login', passport.authenticate('local', { failureFlash: true, failu
     res.redirect(redirectUrl);
 })
 
+//* Passport.js update
+router.get('/logout', (req, res, next) => {
+    req.logout(function (err) {
+        if (err) {
+            return next(err);
+        }
+        req.flash('success', 'Goodbye!');
+        res.redirect('/campgrounds');
+    });
+});
+
 module.exports = router;
+
+/*
+ Passport.js update: 
+ - The req.logout() method now requires a callback function passed as an argument 
+ router.get('/logout', (req, res) => {
+     req.logout();
+     req.flash('success', "Goodbye!");
+     res.redirect('/campgrounds');
+ })
+*/
