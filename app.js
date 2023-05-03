@@ -7,17 +7,23 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const ExpressError = require('./utils/ExpressError');
 const methodOverride = require('method-override');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+
+const User = require('./models/user');
 
 const campgrounds = require('./routes/campgrounds');
 const reviews = require('./routes/reviews');
 
-
+const app = express();
+mongoose.set('strictQuery', false)
+// ------------------------------------------------------------------------------
 // https://mongoosejs.com/docs/connections.html
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
     useNewUrlParser: true,
     // userCreateIndex: true, - its no longer supported option
     useUnifiedTopology: true,
-    useFindAndModify: false
+    // useFindAndModify: false
 });
 
 //after mongoose.connecet we connect the db mongo with mongoose and check if we have errors
@@ -27,17 +33,17 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
     console.log('Database connected');
 });
-
-const app = express();
+// ------------------------------------------------------------------------------
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.engine('ejs', ejsMate);
 
+// ------------------------------------------------------------------------------
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
-
+// ------------------------------------------------------------------------------
 const sessionConfig = {
     secret: 'thisshouldbeabettersecret!',
     resave: false,
@@ -48,9 +54,13 @@ const sessionConfig = {
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
 };
-
+// ------------------------------------------------------------------------------
 app.use(session(sessionConfig));
 app.use(flash());
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
 
 //*
 app.use((req, res, next) => {
@@ -59,10 +69,10 @@ app.use((req, res, next) => {
     next();
 });
 
+// ------------------------------------------------------------------------------
 app.use('/campgrounds', campgrounds);
 app.use('/campgrounds/:id/reviews', reviews);
-
-
+// ------------------------------------------------------------------------------
 
 
 app.get('/', (req, res) => {
