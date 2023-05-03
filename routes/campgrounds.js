@@ -1,25 +1,8 @@
-const { campgroundSchema } = require('../schemas.js');
-const { isLoggedIn } = require('../middleware');
-
+const { isLoggedIn, isAuthor, validatedCampground } = require('../middleware');
 const cathcAsync = require('../utils/cathAsync');
-const ExpressError = require('../utils/ExpressError');
-
 const Campground = require('../models/campground');
-
 const express = require('express');
 const router = express.Router();
-
-// --------------------------------------------------------------------
-const validatedCampground = (req, res, next) => {
-    const { error } = campgroundSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',');
-        throw new ExpressError(msg, 400);
-    } else {
-        next();
-    }
-};
-// --------------------------------------------------------------------
 
 router.get('/', cathcAsync(async (req, res) => {
 
@@ -53,7 +36,7 @@ router.get('/:id', cathcAsync(async (req, res) => {
     res.render('campgrounds/show', { campground });
 }));
 
-router.get('/:id/edit', isLoggedIn, cathcAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, isAuthor, cathcAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     res.render('campgrounds/edit', { campground });
 }));
