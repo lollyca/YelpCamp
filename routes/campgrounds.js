@@ -37,6 +37,7 @@ router.post('/', isLoggedIn, validatedCampground, cathcAsync(async (req, res, ne
     //Ok, after looking what req.body was, lets create a new Camground and save
     //if (!req.body.campground) throw new ExpressError('Invalid Campground Data', 400);
     const campground = new Campground(req.body.campground);
+    campground.author = req.user._id;
     await campground.save();
     req.flash('success', 'Successfully made a new campground');
     res.redirect(`/campgrounds/${campground._id}`);
