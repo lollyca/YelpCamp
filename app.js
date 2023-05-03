@@ -68,6 +68,8 @@ passport.deserializeUser(User.deserializeUser());
 
 //*
 app.use((req, res, next) => {
+    // *2
+    res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
@@ -99,5 +101,20 @@ app.listen(3000, () => {
 });
 
 
-//* ---- We are doing this middleware because we will have access to it in our templates automatically.
-//       We don't have to pass it through on our routers
+/* 
+We are doing this middleware because we will have access to it in our templates automatically.
+We don't have to pass it through on our routers
+*/
+
+/*2 - involves partials/navbar 
+
+"see or not see log&register vs logout"
+
+THE REQ HAS INFO ABOUT THE USER - IT'S AUTOMATICALLY PUT THERE FOR US
+We don't need to look in the session, even though it's stored in the session,
+we don't have to deal with that =]
+P.S: When I do like this: 
+  res.locals.currentUser = req.user;
+I will have access to that in every single template!!! Because they are .locals (globals)
+*/
+ 
