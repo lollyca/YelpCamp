@@ -45,27 +45,27 @@ router.post('/', isLoggedIn, validatedCampground, cathcAsync(async (req, res, ne
 router.get('/:id', cathcAsync(async (req, res) => {
     //we findById to get exacly the one from the loop in the index.ejs file
     const campground = await Campground.findById(req.params.id).populate('reviews');
-    if(!campground) {
+    if (!campground) {
         req.flash('error', 'Campground Not Found');
         res.redirect('/campgrounds');
     }
     res.render('campgrounds/show', { campground });
 }));
 
-router.get('/:id/edit', cathcAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, cathcAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     res.render('campgrounds/edit', { campground });
 }));
 
 //#update
-router.put('/:id', validatedCampground, cathcAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, validatedCampground, cathcAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
     req.flash('success', 'Successfully updated campground');
     res.redirect(`/campgrounds/${campground._id}`);
 }));
 
-router.delete('/:id', cathcAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, cathcAsync(async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
     req.flash('success', 'Successfully deleted Campground');

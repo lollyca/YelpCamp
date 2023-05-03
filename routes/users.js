@@ -26,14 +26,22 @@ router.post('/register', cathcAsync(async (req, res, next) => {
 
 router.get('/login', (req, res) => {
     res.render('users/login');
-})
+});
 
-router.post('/login', passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), (req, res) => {
-    req.flash('success', 'welcome back!');
-    const redirectUrl = req.session.returnTo || '/campgrounds';
-    delete req.session.returnTo;
-    res.redirect(redirectUrl);
-})
+router.post(
+    "/login",
+    passport.authenticate("local", {
+      failureFlash: true,
+      failureRedirect: "/login",
+      failureMessage: true,
+      keepSessionInfo: true,
+    }),
+    (req, res) => {
+      req.flash("success", "User logged to YelpCamp");
+      const redirectUrl = req.session.returnTo || "/campgrounds";
+      res.redirect(redirectUrl);
+    }
+  );
 
 //* Passport.js update
 router.get('/logout', (req, res, next) => {
