@@ -1,4 +1,4 @@
-const { validateReview, isLoggedIn, isAuthor} = require('../middleware');
+const { validateReview, isLoggedIn, isReviewAuthor} = require('../middleware');
 const cathcAsync = require('../utils/cathAsync');
 const Campground = require('../models/campground');
 const Review = require('../models/review');
@@ -15,7 +15,7 @@ router.post('/', isLoggedIn, validateReview, cathcAsync(async (req, res, next) =
     res.redirect(`/campgrounds/${campground._id}`);
 }));
 
-router.delete('/:reviewId',cathcAsync(async (req, res) => {
+router.delete('/:reviewId',isLoggedIn, isReviewAuthor, cathcAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } }); //I want to pull from the reviews array reviewID (how to read this line) -- if you want to google it: remove from array mongo
     await Review.findByIdAndDelete(reviewId);
