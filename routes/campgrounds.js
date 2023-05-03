@@ -1,4 +1,5 @@
 const { campgroundSchema } = require('../schemas.js');
+const { isLoggedIn } = require('../middleware');
 
 const cathcAsync = require('../utils/cathAsync');
 const ExpressError = require('../utils/ExpressError');
@@ -26,11 +27,11 @@ router.get('/', cathcAsync(async (req, res) => {
     res.render('campgrounds/index', { campgrounds });
 }));
 
-router.get('/new', (req, res) => {
+router.get('/new', isLoggedIn, (req, res) => {
     res.render('campgrounds/new');
 });
 
-router.post('/', validatedCampground, cathcAsync(async (req, res, next) => {
+router.post('/', isLoggedIn, validatedCampground, cathcAsync(async (req, res, next) => {
     //without parse.body we can't see a thing =P
     //res.send(req.body);
     //Ok, after looking what req.body was, lets create a new Camground and save
