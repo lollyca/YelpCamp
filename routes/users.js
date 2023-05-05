@@ -1,20 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const cathcAsync = require('../utils/cathAsync');
+const catchAsync = require('../utils/cathAsync');
 const User = require('../models/user');
 const users = require('../controllers/users');
 
-router.get('/register', users.renderRegister);
+router.route('/register')
+    .get(users.renderRegister)
+    .post(catchAsync(users.register));
 
-router.post('/register', cathcAsync(users.register));
+router.route('/login')
+    .get(users.renderLogin)
+    .post(passport.authenticate('local', { failureFlash: true, failureRedirect: '/login', failureMessage: true, keepSessionInfo: true, }), users.login)
 
-router.get('/login', users.renderLogin);
-
-router.post("/login", users.login);
-
-//* Passport.js update
-router.get('/logout', users.logout);
+router.get('/logout', users.logout) //* Passport.js update
 
 module.exports = router;
 

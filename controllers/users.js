@@ -1,6 +1,4 @@
 const User = require('../models/user');
-const passport = require('passport');
-
 
 module.exports.renderRegister = (req, res) => {
     res.render('users/register');
@@ -26,19 +24,13 @@ module.exports.renderLogin = (req, res) => {
     res.render('users/login');
 };
 
-module.exports.login = passport.authenticate("local", {
-    failureFlash: true,
-    failureRedirect: "/login",
-    failureMessage: true,
-    keepSessionInfo: true,
-  }),
-  (req, res) => {
+module.exports.login = (req, res) => {
     req.flash("success", "User logged to YelpCamp");
     const redirectUrl = req.session.returnTo || "/campgrounds";
     res.redirect(redirectUrl);
-  };
+};
 
-  module.exports.logout = (req, res, next) => {
+module.exports.logout = (req, res, next) => {
     req.logout(function (err) {
         if (err) {
             return next(err);
