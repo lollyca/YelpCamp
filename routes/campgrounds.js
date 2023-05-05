@@ -1,24 +1,22 @@
 const { isLoggedIn, isAuthor, validatedCampground } = require('../middleware');
 const cathcAsync = require('../utils/cathAsync');
-const Campground = require('../models/campground');
 const campgrounds = require('../controllers/campgrounds');
 const express = require('express');
 const router = express.Router();
 
-router.get('/', cathcAsync(campgrounds.index));
+router.route('/')
+    .get(cathcAsync(campgrounds.index))
+    .post(isLoggedIn, validatedCampground, cathcAsync(campgrounds.createCampground))
+
 
 router.get('/new', isLoggedIn, campgrounds.renderNewForm);
 
-router.post('/', isLoggedIn, validatedCampground, cathcAsync(campgrounds.createCampground));
-
-router.get('/:id', cathcAsync(campgrounds.showCampground));
+router.route('/:id')
+    .get(cathcAsync(campgrounds.showCampground))
+    .put(isLoggedIn, validatedCampground, cathcAsync(campgrounds.updateCampground)) //#update
+    .delete(isLoggedIn, cathcAsync(campgrounds.deleteCampground));
 
 router.get('/:id/edit', isLoggedIn, isAuthor, cathcAsync(campgrounds.renderEditForm));
-
-//#update
-router.put('/:id', isLoggedIn, validatedCampground, cathcAsync(campgrounds.updateCampground));
-
-router.delete('/:id', isLoggedIn, cathcAsync(campgrounds.deleteCampground));
 
 module.exports = router;
 
