@@ -3,11 +3,15 @@ const cathcAsync = require('../utils/cathAsync');
 const campgrounds = require('../controllers/campgrounds');
 const express = require('express');
 const router = express.Router();
+const multer  = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 router.route('/')
     .get(cathcAsync(campgrounds.index))
-    .post(isLoggedIn, validatedCampground, cathcAsync(campgrounds.createCampground))
-
+    // .post(isLoggedIn, validatedCampground, cathcAsync(campgrounds.createCampground))
+    .post(upload.single('image'), (req,res) => {
+        console.log(req.body, req.file);
+    })
 
 router.get('/new', isLoggedIn, campgrounds.renderNewForm);
 
