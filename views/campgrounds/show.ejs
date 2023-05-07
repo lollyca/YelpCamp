@@ -9,37 +9,40 @@
     <div class="row">
         <div class="col-6">
             <div class="card mb-3">
-                <img src="<%=campground.image%>" class="card-img-top">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <%=campground.title%>
-                    </h5>
-                    <p class="card-text">
-                        <%=campground.description%>
-                    </p>
-                </div>
-                <ul class="list-group list-group-flush border-top border-bottom">
-                    <li class="list-group-item text-muted">
-                        <%= campground.location%>
-                    </li>
-                    <li class="list-group-item">
-                        Submitted by <%= campground.author.username%>
-                    </li>
-                    <li class="list-group-item">$<%= campground.price%>/night</li>
-                </ul>
-                <!--------------------- Edit and Delete -------------------->
-                <% if (currentUser && campground.author.equals(currentUser._id)) { %>
-                    <div class="card-body">
-                        <a class="card-link btn btn-info" href="/campgrounds/<%=campground._id%>/edit">Edit</a>
-                        <form class="d-inline" action="/campgrounds/<%=campground._id%>?_method=DELETE" method="POST">
-                            <button class="btn btn-danger">Delete</button>
-                        </form>
-                    </div>
+                <% for (let img of campground.images) { %>
+                    <img src="<%=img.url%>" class="card-img-top">ß
                     <% } %>
-                        <div class="card-footer text-muted">
-                            2 days ago
-                            <a href="/campgrounds">All Campgrounds</a>
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <%=campground.title%>
+                            </h5>
+                            <p class="card-text">
+                                <%=campground.description%>
+                            </p>
                         </div>
+                        <ul class="list-group list-group-flush border-top border-bottom">
+                            <li class="list-group-item text-muted">
+                                <%= campground.location%>
+                            </li>
+                            <li class="list-group-item">
+                                Submitted by <%= campground.author.username%>
+                            </li>
+                            <li class="list-group-item">$<%= campground.price%>/night</li>
+                        </ul>
+                        <!--------------------- Edit and Delete -------------------->
+                        <% if (currentUser && campground.author.equals(currentUser._id)) { %>
+                            <div class="card-body">
+                                <a class="card-link btn btn-info" href="/campgrounds/<%=campground._id%>/edit">Edit</a>
+                                <form class="d-inline" action="/campgrounds/<%=campground._id%>?_method=DELETE"
+                                    method="POST">
+                                    <button class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                            <% } %>
+                                <div class="card-footer text-muted">
+                                    2 days ago
+                                    <a href="/campgrounds">All Campgrounds</a>
+                                </div>
             </div>
         </div>
         <div class="col-6">
@@ -53,8 +56,8 @@
                         <input class="form-range" type="range" name="review[rating]" id="rating" min="1" max="5" required> -->
 
                         <fieldset class="starability-basic">
-                            <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked
-                                aria-label="No rating." />
+                            <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1"
+                                checked aria-label="No rating." />
                             <input type="radio" id="first-rate1" name="review[rating]" value="1" />
                             <label for="first-rate1" title="Terrible">1 star</label>
                             <input type="radio" id="first-rate2" name="review[rating]" value="2" />
@@ -85,9 +88,15 @@
                     <% for (let review of campground.reviews) { %>
                         <div class="mb-3 card">
                             <div class="card-body">
-                                <h5 class="card-title"><%=review.author.username %></h5>
-                                <p class="starability-result" data-rating="<%=review.rating%>"><%= review.rating %></p>
-                                <p class="card-text"><%=review.body %></p>
+                                <h5 class="card-title">
+                                    <%=review.author.username %>
+                                </h5>
+                                <p class="starability-result" data-rating="<%=review.rating%>">
+                                    <%= review.rating %>
+                                </p>
+                                <p class="card-text">
+                                    <%=review.body %>
+                                </p>
 
                                 <!-- Delete Form for each review -->
                                 <% if (currentUser && review.author.equals(currentUser._id)) { %>
