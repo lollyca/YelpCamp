@@ -14,7 +14,7 @@ ImageSchema.virtual('thumbnail').get(function () {
 const CampgroundSchema = new Schema({
     title: String,
     images: [ImageSchema],
-    // -------------------- info --------------------
+    // -------------------- #1 --------------------
     geometry: {
         type: {
           type: String,
@@ -26,7 +26,7 @@ const CampgroundSchema = new Schema({
           required: true
         }
     },
-    // -------------------- info --------------------
+    // ---------------------------------------------
     name: String,
     price: Number,
     description: String,
@@ -55,3 +55,11 @@ CampgroundSchema.post('findOneAndDelete', async function (doc) {
 
 const Camp = mongoose.model('Camp', CampgroundSchema);
 module.exports = Camp;
+
+/* Notes:
+
+#1: 
+Mongoose documentation about the right way to add geoJson into Schema:
+https://mongoosejs.com/docs/geojson.html
+
+*/
