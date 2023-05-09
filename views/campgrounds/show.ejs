@@ -4,9 +4,6 @@
     <div class="row">
         <div class="col-6">
 
-        <!-------------------------------- MAP ------------------------------->
-            <div id='map' style='width: 400px; height: 300px;'></div>
-        <!-------------------------------------------------------------------->
 
             <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
@@ -62,8 +59,13 @@
                             <a href="/campgrounds">All Campgrounds</a>
                         </div>
             </div>
+            
         </div>
         <div class="col-6">
+            <!-------------------------------- MAP ------------------------------->
+            <div class="mb-3" id='map' style='width: 400px; height: 300px;'></div>
+            <!-------------------------------------------------------------------->
+
             <!-- ----------------------Review---------------------- -->
             <% if (currentUser) { %>
                 <h2>Leave a Review</h2>
@@ -103,6 +105,7 @@
 
                 <% } %>
                     <!-- ------------------Review Display------------------ -->
+                    
                     <% for (let review of campground.reviews) { %>
                         <div class="mb-3 card">
                             <div class="card-body">
