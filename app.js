@@ -13,6 +13,7 @@ const ExpressError = require('./utils/ExpressError');
 const methodOverride = require('method-override');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const mongoSanitize = require('express-mongo-sanitize'); // this one helps sanitazing the query
 
 const User = require('./models/user');
 
@@ -63,6 +64,7 @@ const sessionConfig = {
 // ------------------------------------------------------------------------------
 app.use(session(sessionConfig));
 app.use(flash());
+app.use(mongoSanitize());
 
 app.use(passport.initialize());
 app.use(passport.session());
