@@ -15,6 +15,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const mongoSanitize = require('express-mongo-sanitize'); // this one helps sanitazing the query
 const helmet = require('helmet');
+const dbURL = process.env.DB_URL;
 
 const User = require('./models/user');
 
@@ -27,6 +28,7 @@ const app = express();
 mongoose.set('strictQuery', false)
 // ------------------------------------------------------------------------------
 // https://mongoosejs.com/docs/connections.html
+// mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp'
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
     useNewUrlParser: true,
     // userCreateIndex: true, - its no longer supported option
