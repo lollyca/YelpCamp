@@ -15,13 +15,15 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const mongoSanitize = require('express-mongo-sanitize'); // this one helps sanitazing the query
 const helmet = require('helmet');
-const dbURL = process.env.DB_URL;
-
+const MongoStore = require('connect-mongo');
 const User = require('./models/user');
 
 const campgroundsRoutes = require('./routes/campgrounds');
 const reviewsRoutes = require('./routes/reviews');
 const userRoutes = require('./routes/users');
+
+const dbURL = 'mongodb://127.0.0.1:27017/yelp-camp';
+//process.env.DB_URL;
 
 
 const app = express();
@@ -29,7 +31,7 @@ mongoose.set('strictQuery', false)
 // ------------------------------------------------------------------------------
 // https://mongoosejs.com/docs/connections.html
 // mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp'
-mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
+mongoose.connect(dbURL, {
     useNewUrlParser: true,
     // userCreateIndex: true, - its no longer supported option
     useUnifiedTopology: true,
@@ -53,8 +55,23 @@ app.engine('ejs', ejsMate);
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// --------------------------------STORE------------------------------------------
+const store = MongoStore.create({
+    mongoUrl: dbURL,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret: 'thisshouldbeabettersecret!'
+    }
+});
+
+store.on('error', function(e) {
+    console.log('SESSION STORE ERROR', e)
+} )
 // ------------------------------------------------------------------------------
 const sessionConfig = {
+    store: store,
+    name: 'session',
     secret: 'thisshouldbeabettersecret!',
     resave: false,
     saveUninitialized: true,
