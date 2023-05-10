@@ -194,5 +194,3 @@ P.S: When I do like this:
   res.locals.currentUser = req.user;
 I will have access to that in every single template!!! Because they are .locals (globals)
 */
- 
-//ele ta bravo
