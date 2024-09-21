@@ -1,5 +1,20 @@
 const BaseJoi = require('joi');
-const sanitizeHtml = require('sanitize-html'); //to help me to write my own JOI sanatization
+
+function sanitizeString(value) {
+    // Remove HTML tags
+    value = value.replace(/<[^>]*>/g, '');
+
+    // Strip attributes
+    value = value.replace(/\s+(?!=[^<>]*>)[^>]*=/g, '');
+
+    // Escape special characters
+    value = value.replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+
+    return value;
+}
 
 const extension = (joi) => ({
     type: 'string',
@@ -10,10 +25,7 @@ const extension = (joi) => ({
     rules: {
         escapeHTML: {
             validate(value, helpers) {
-                const clean = sanitizeHtml(value, {
-                    allowedTags: [],
-                    allowedAttributes: {},
-                });
+                const clean = sanitizeString(value);
                 if (clean !== value) return helpers.error('string.escapeHTML', { value })
                 return clean;
             }
