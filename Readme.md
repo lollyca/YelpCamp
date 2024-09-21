@@ -37,6 +37,8 @@ MAPBOX_TOKEN=
 npm i
 ```
 
+> Note: The `next` dependency in `devDependencies` is not necessary for this project, only for deployment in vercel due to some issue with `sanitize-html`
+
 ## How to run
 
 ```shell
