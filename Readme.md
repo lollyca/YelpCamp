@@ -33,10 +33,12 @@ MAPBOX_TOKEN=
 
 2. Install packages
 
-```
+```shell
 npm i
 ```
 
 ## How to run
 
-1. 
+```shell
+npm start
+```
