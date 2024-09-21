@@ -15,3 +15,28 @@ Demo available at:
 - [ejs]()
 - [joi]()
 - [starability.css](https://github.com/LunarLogic/starability)
+
+## Installation
+
+1. Configure a `.env` file with these values populated
+
+```
+NODE_ENV=
+DB_URL=
+SECRET=
+PORT=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_KEY=
+CLOUDINARY_SECRET=
+MAPBOX_TOKEN=
+```
+
+2. Install packages
+
+```
+npm i
+```
+
+## How to run
+
+1. 

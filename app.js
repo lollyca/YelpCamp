@@ -1,4 +1,4 @@
-if(process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== "production") {
     require('dotenv').config();
 };
 
@@ -66,9 +66,9 @@ const store = MongoStore.create({
     }
 });
 
-store.on('error', function(e) {
+store.on('error', function (e) {
     console.log('SESSION STORE ERROR', e)
-} )
+});
 // -----------------------------SESSION--------------------------------------------
 const sessionConfig = {
     store: store,
@@ -168,7 +168,7 @@ app.all('*', (req, res, next) => {
 
 app.use((err, req, res, next) => {
     const { statusCode = 500, message = 'something went wrong baby' } = err;
-    if(!err.message) err.message = 'Oh No, Something went wrong BOY'
+    if (!err.message) err.message = 'Oh No, Something went wrong BOY'
     res.status(statusCode).render('error', { err });
 });
 
